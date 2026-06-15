@@ -1,4 +1,5 @@
 import { FeatureCard } from '../components/FeatureCard';
+import type { User } from '../types/auth';
 
 const features = [
   {
@@ -15,12 +16,20 @@ const features = [
   }
 ];
 
-export function HomePage() {
+type HomePageProps = {
+  user: User;
+  onLogout: () => void;
+};
+
+export function HomePage({ user, onLogout }: HomePageProps) {
   return (
     <main className="mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-10">
       <nav className="flex items-center justify-between">
         <strong className="text-xl text-brand-700">Meu Resumo</strong>
-        <span className="rounded-full bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700">MVP em construção</span>
+        <div className="flex items-center gap-3">
+          <span className="rounded-full bg-brand-50 px-4 py-2 text-sm font-medium text-brand-700">Olá, {user.name}</span>
+          <button className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-white" onClick={onLogout} type="button">Sair</button>
+        </div>
       </nav>
 
       <section className="grid flex-1 items-center gap-10 py-16 lg:grid-cols-[1.1fr_0.9fr]">

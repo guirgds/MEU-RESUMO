@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
 import { Router } from 'express';
-import jwt from 'jsonwebtoken';
 import { z } from 'zod';
-import { env } from '../../lib/env.js';
+import { authenticate } from '../../middlewares/authenticate.js';
+import { asyncHandler } from '../../middlewares/async-handler.js';
 import { prisma } from '../../lib/prisma.js';
+import { createAuthToken } from '../../utils/tokens.js';
 
 export const authRouter = Router();
 
@@ -19,43 +20,60 @@ const loginSchema = z.object({
   password: z.string().min(8)
 });
 
-authRouter.post('/register', async (request, response) => {
-  const data = registerSchema.parse(request.body);
-  const passwordHash = await bcrypt.hash(data.password, 10);
+authRouter.post(
+  '/register',
+  asyncHandler(async (request, response) => {
+    const data = registerSchema.parse(request.body);
+    const passwordHash = await bcrypt.hash(data.password, 10);
 
-  const user = await prisma.user.create({
-    data: {
-      name: data.name,
-      username: data.username,
-      email: data.email,
-      passwordHash
-    },
-    select: { id: true, name: true, username: true, email: true, createdAt: true }
-  });
+    const user = await prisma.user.create({
+      data: {
+        name: data.name,
+        username: data.username,
+        email: data.email,
+        passwordHash
+      },
+      select: { id: true, name: true, username: true, email: true, bio: true, avatarUrl: true, createdAt: true }
+    });
 
-  const token = jwt.sign({ sub: user.id }, env.JWT_SECRET, { expiresIn: '7d' });
+    const token = createAuthToken(user.id);
 
-  return response.status(201).json({ user, token });
-});
+    return response.status(201).json({ user, token });
+  })
+);
 
-authRouter.post('/login', async (request, response) => {
-  const data = loginSchema.parse(request.body);
-  const user = await prisma.user.findUnique({ where: { email: data.email } });
+authRouter.post(
+  '/login',
+  asyncHandler(async (request, response) => {
+    const data = loginSchema.parse(request.body);
+    const user = await prisma.user.findUnique({ where: { email: data.email } });
 
-  if (!user) {
-    return response.status(401).json({ message: 'Credenciais inválidas.' });
-  }
+    if (!user) {
+      return response.status(401).json({ message: 'Credenciais inválidas.' });
+    }
 
-  const passwordMatches = await bcrypt.compare(data.password, user.passwordHash);
+    const passwordMatches = await bcrypt.compare(data.password, user.passwordHash);
 
-  if (!passwordMatches) {
-    return response.status(401).json({ message: 'Credenciais inválidas.' });
-  }
+    if (!passwordMatches) {
+      return response.status(401).json({ message: 'Credenciais inválidas.' });
+    }
 
-  const token = jwt.sign({ sub: user.id }, env.JWT_SECRET, { expiresIn: '7d' });
+    const token = createAuthToken(user.id);
 
-  return response.json({
-    user: { id: user.id, name: user.name, username: user.username, email: user.email },
-    token
-  });
+    return response.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        avatarUrl: user.avatarUrl
+      },
+      token
+    });
+  })
+);
+
+authRouter.get('/me', authenticate, (request, response) => {
+  return response.json({ user: request.user });
 });
