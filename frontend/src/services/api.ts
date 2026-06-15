@@ -1,4 +1,5 @@
 import type { AuthResponse, User } from '../types/auth';
+import type { Summary, SummaryVisibility } from '../types/summary';
 
 const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3333';
 const tokenKey = 'meu-resumo-token';
@@ -61,4 +62,20 @@ export async function loginUser(payload: { email: string; password: string }) {
 
 export async function getCurrentUser(token: string) {
   return apiRequest<{ user: User }>('/api/auth/me', { token });
+}
+
+
+export async function listPublicSummaries() {
+  return apiRequest<Summary[]>('/api/summaries');
+}
+
+export async function createSummary(
+  token: string,
+  payload: { title: string; content: string; visibility: SummaryVisibility }
+) {
+  return apiRequest<Summary>('/api/summaries', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(payload)
+  });
 }
