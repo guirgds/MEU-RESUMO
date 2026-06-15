@@ -1,4 +1,5 @@
 export type SummaryVisibility = 'PUBLIC' | 'PRIVATE' | 'UNLISTED';
+export type AttachmentType = 'IMAGE' | 'AUDIO' | 'PDF' | 'FILE';
 
 export type Summary = {
   id: string;
@@ -14,5 +15,5 @@ export type Summary = {
   };
   subject: { id: string; name: string } | null;
   topic: { id: string; name: string } | null;
-  attachments: Array<{ id: string; url: string; type: string; fileName: string | null }>;
+  attachments: Array<{ id: string; url: string; type: AttachmentType; fileName: string | null }>;
 };

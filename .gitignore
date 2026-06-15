@@ -9,3 +9,5 @@ build/
 backend/prisma/dev.db
 backend/prisma/dev.db-journal
 coverage/
+backend/uploads/*
+!backend/uploads/.gitkeep

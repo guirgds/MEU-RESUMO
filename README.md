@@ -293,3 +293,13 @@ npm run dev
 ```
 
 Por padrão, a API roda em `http://localhost:3333` e o frontend em `http://localhost:5173`.
+
+## Formatos de anexo em resumos
+
+Os resumos agora aceitam anexos opcionais nos formatos:
+
+- imagem (`image/*`);
+- áudio (`audio/*`);
+- PDF (`application/pdf`).
+
+No ambiente local, os arquivos são salvos em `backend/uploads/` e servidos pela API em `/uploads/<arquivo>`. Em produção, essa estratégia deve evoluir para storage externo como S3, Cloudflare R2 ou Supabase Storage.

@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { createSummary, getStoredToken } from '../services/api';
+import { createSummary, getStoredToken, uploadSummaryAttachment } from '../services/api';
 import type { Summary, SummaryVisibility } from '../types/summary';
 
 type SummaryFormProps = {
@@ -10,6 +10,7 @@ export function SummaryForm({ onCreated }: SummaryFormProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [visibility, setVisibility] = useState<SummaryVisibility>('PUBLIC');
+  const [attachment, setAttachment] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,10 +27,12 @@ export function SummaryForm({ onCreated }: SummaryFormProps) {
       }
 
       const summary = await createSummary(token, { title, content, visibility });
-      onCreated(summary);
+      const uploadedAttachment = attachment ? await uploadSummaryAttachment(token, summary.id, attachment) : null;
+      onCreated(uploadedAttachment ? { ...summary, attachments: [uploadedAttachment, ...summary.attachments] } : summary);
       setTitle('');
       setContent('');
       setVisibility('PUBLIC');
+      setAttachment(null);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : 'Não foi possível criar o resumo.');
     } finally {
@@ -40,7 +43,7 @@ export function SummaryForm({ onCreated }: SummaryFormProps) {
   return (
     <form className="rounded-3xl bg-white p-6 shadow-sm shadow-slate-200" onSubmit={handleSubmit}>
       <h2 className="text-xl font-bold text-slate-950">Criar resumo</h2>
-      <p className="mt-1 text-sm text-slate-600">Comece com texto ou Markdown. Uploads entram em uma próxima etapa.</p>
+      <p className="mt-1 text-sm text-slate-600">Comece com texto ou Markdown e anexe PDF, imagem ou áudio.</p>
 
       <label className="mt-5 block text-sm font-medium text-slate-700">
         Título
@@ -59,6 +62,11 @@ export function SummaryForm({ onCreated }: SummaryFormProps) {
           <option value="UNLISTED">Não listado</option>
           <option value="PRIVATE">Privado</option>
         </select>
+      </label>
+
+      <label className="mt-4 block text-sm font-medium text-slate-700">
+        Anexo opcional
+        <input className="mt-1 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-500" type="file" accept="image/*,audio/*,application/pdf" onChange={(event) => setAttachment(event.target.files?.[0] ?? null)} />
       </label>
 
       {error && <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}

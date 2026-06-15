@@ -16,6 +16,7 @@ enum SummaryVisibility {
 enum AttachmentType {
   IMAGE
   AUDIO
+  PDF
   FILE
 }
 
