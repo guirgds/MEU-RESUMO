@@ -98,3 +98,163 @@ Apesar da stack ser adequada, algumas decisões devem ser preparadas desde o in�
 5. Implementar CRUD inicial de resumos.
 6. Implementar questões e tentativas.
 7. Criar dashboard de analytics.
+
+## Melhor plano para iniciar o projeto
+
+O melhor caminho é começar por um **MVP pequeno, funcional e validável**, em vez de tentar construir toda a rede social de uma vez. O projeto é grande, então a ordem ideal é criar primeiro a base que sustenta todo o resto: usuários, matérias, assuntos, resumos e questões.
+
+### Fase 0 — Preparação do repositório
+
+Objetivo: deixar o projeto pronto para desenvolvimento.
+
+Entregas:
+
+- criar a estrutura de monorepo com `backend/` e `frontend/`;
+- configurar TypeScript;
+- configurar padrões de lint/format;
+- criar variáveis de ambiente de exemplo;
+- definir scripts de desenvolvimento;
+- documentar como rodar o projeto localmente.
+
+Por que começar aqui: sem essa base, cada nova feature fica mais difícil de testar, organizar e evoluir.
+
+### Fase 1 — Backend base
+
+Objetivo: criar a API e o banco de dados inicial.
+
+Entregas:
+
+- configurar Express com TypeScript;
+- configurar Prisma;
+- criar o schema inicial do banco;
+- criar autenticação com cadastro, login e JWT;
+- criar entidades principais: usuário, matéria, assunto e resumo;
+- criar endpoints básicos de saúde e autenticação.
+
+Prioridade de dados nesta fase:
+
+1. `User`
+2. `Subject`
+3. `Topic`
+4. `Summary`
+5. `SummaryAttachment`
+
+### Fase 2 — Frontend base
+
+Objetivo: criar a primeira experiência navegável do usuário.
+
+Entregas:
+
+- configurar React, Vite, TypeScript e Tailwind;
+- criar layout principal;
+- criar telas de cadastro e login;
+- criar tela inicial/feed simples;
+- criar tela de perfil;
+- conectar frontend com a API.
+
+### Fase 3 — Resumos digitais
+
+Objetivo: permitir que o usuário crie e veja resumos.
+
+Entregas:
+
+- criar resumo em texto e Markdown;
+- listar resumos públicos;
+- filtrar por matéria e assunto;
+- visualizar resumo individual;
+- preparar anexos de imagem e áudio;
+- definir visibilidade: público, privado ou não listado.
+
+Essa deve ser a primeira feature principal, porque valida a ideia central do produto: uma rede social de resumos.
+
+### Fase 4 — Banco de questões
+
+Objetivo: permitir estudo ativo, não apenas leitura.
+
+Entregas:
+
+- criar questões com alternativas;
+- associar questão a matéria e assunto;
+- marcar resposta correta;
+- adicionar explicação da resposta;
+- filtrar questões por matéria, assunto, dificuldade e data.
+
+### Fase 5 — Tentativas e analytics
+
+Objetivo: transformar respostas em dados úteis para o estudante.
+
+Entregas:
+
+- registrar cada tentativa de questão;
+- salvar acerto/erro, data, matéria, assunto e tempo gasto;
+- criar estatísticas por matéria;
+- criar estatísticas por assunto;
+- permitir filtro por período;
+- mostrar evolução de desempenho.
+
+Essa fase depende do banco de questões, por isso deve vir depois dele.
+
+### Fase 6 — Camada social
+
+Objetivo: transformar o produto em rede social.
+
+Entregas:
+
+- busca de usuários;
+- seguir usuários;
+- curtir resumos;
+- comentar resumos;
+- salvar favoritos;
+- feed com resumos de pessoas seguidas.
+
+Essa fase deve vir depois dos resumos, porque a interação social precisa de conteúdo para fazer sentido.
+
+## Primeira versão recomendada
+
+A primeira versão realmente útil deve conter apenas:
+
+- cadastro e login;
+- criação de perfil;
+- criação de resumo em texto/Markdown;
+- listagem de resumos públicos;
+- busca por matéria/assunto;
+- criação de questões simples;
+- resposta de questões;
+- estatística básica de acertos por matéria.
+
+Com isso, o projeto já terá valor real e poderá evoluir sem retrabalho.
+
+## O que não fazer no começo
+
+Para evitar que o projeto fique grande demais antes de funcionar, é melhor deixar para depois:
+
+- chat entre usuários;
+- notificações em tempo real;
+- ranking global;
+- IA para gerar resumos automaticamente;
+- aplicativo mobile;
+- editor avançado estilo Notion;
+- busca muito sofisticada;
+- sistema completo de moderação.
+
+Essas ideias são boas, mas não são necessárias para validar o MVP.
+
+## Próxima ação recomendada
+
+A próxima ação prática é criar a estrutura inicial do projeto:
+
+```text
+backend/
+  prisma/
+  src/
+    modules/
+    routes/
+    server.ts
+frontend/
+  src/
+    components/
+    pages/
+    services/
+```
+
+Depois disso, o primeiro código a implementar deve ser o backend de autenticação e o schema inicial do Prisma.
