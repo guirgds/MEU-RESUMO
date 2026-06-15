@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum SummaryVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum AttachmentType {
+  IMAGE
+  AUDIO
+  FILE
+}
+
+enum QuestionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+model User {
+  id           String            @id @default(cuid())
+  name         String
+  username     String            @unique
+  email        String            @unique
+  passwordHash String
+  bio          String?
+  avatarUrl    String?
+  summaries    Summary[]
+  questions    Question[]
+  attempts     QuestionAttempt[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model Subject {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  topics    Topic[]
+  summaries Summary[]
+  questions Question[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Topic {
+  id        String     @id @default(cuid())
+  name      String
+  subjectId String
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  summaries Summary[]
+  questions Question[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([subjectId, name])
+}
+
+model Summary {
+  id          String              @id @default(cuid())
+  title       String
+  content     String
+  visibility  SummaryVisibility   @default(PUBLIC)
+  authorId    String
+  subjectId   String?
+  topicId     String?
+  author      User                @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  subject     Subject?            @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  topic       Topic?              @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  attachments SummaryAttachment[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model SummaryAttachment {
+  id        String         @id @default(cuid())
+  type      AttachmentType
+  url       String
+  fileName  String?
+  summaryId String
+  summary   Summary        @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+}
+
+model Question {
+  id          String             @id @default(cuid())
+  statement   String
+  explanation String?
+  difficulty  QuestionDifficulty @default(MEDIUM)
+  authorId    String
+  subjectId   String
+  topicId     String?
+  author      User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  subject     Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  topic       Topic?             @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  options     QuestionOption[]
+  attempts    QuestionAttempt[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean  @default(false)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model QuestionAttempt {
+  id               String   @id @default(cuid())
+  userId           String
+  questionId       String
+  selectedOptionId String?
+  isCorrect        Boolean
+  timeSpentSeconds Int?
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question         Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+}

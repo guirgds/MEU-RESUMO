@@ -258,3 +258,38 @@ frontend/
 ```
 
 Depois disso, o primeiro código a implementar deve ser o backend de autenticação e o schema inicial do Prisma.
+
+## Estrutura criada
+
+O repositório agora está preparado como um monorepo npm com duas aplicações:
+
+- `backend/`: API Node.js, Express, TypeScript e Prisma;
+- `frontend/`: aplicação React, Vite, TypeScript e Tailwind CSS.
+
+### Como rodar localmente
+
+1. Instale as dependências:
+
+```bash
+npm install
+```
+
+2. Gere o Prisma Client:
+
+```bash
+npm run prisma:generate --workspace @meu-resumo/backend
+```
+
+3. Crie o banco local SQLite:
+
+```bash
+npm run prisma:migrate --workspace @meu-resumo/backend
+```
+
+4. Rode backend e frontend em modo desenvolvimento:
+
+```bash
+npm run dev
+```
+
+Por padrão, a API roda em `http://localhost:3333` e o frontend em `http://localhost:5173`.
